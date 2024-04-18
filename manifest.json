@@ -41,6 +41,8 @@
         "lib/ace/mode-json.js",
         "lib/ace/mode-sql.js",
         "lib/ace/mode-text.js",
+        "lib/ace/mode-groovy.js",
+        "lib/ace/mode-javascript.js",
         "lib/ace/mode-xml.js",
         "/common/logging.js",
         "/common/tools.js",
