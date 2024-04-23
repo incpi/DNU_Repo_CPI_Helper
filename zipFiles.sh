@@ -24,4 +24,4 @@ name="${name// /_}"
 
 # zipping files
 echo "Zipping files..."
-zip -r "bin/${name}_${version}.zip" .
+zip -r "bin/${name}_${version}.zip" *
