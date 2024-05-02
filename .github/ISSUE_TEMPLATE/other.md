@@ -2,7 +2,7 @@
 name: Other
 about: All other topics.
 title: ''
-labels: ''
+labels: 'help wanted'
 assignees: ''
 
 ---
