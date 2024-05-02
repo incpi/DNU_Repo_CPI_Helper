@@ -22,5 +22,12 @@ done < manifest.json
 name="${name//,/}"
 name="${name// /_}"
 
-echo "Zipping files..."
-find . -type f ! \( -path "./docs/*" -o -path "./.*" \) -exec zip -r "bin/${name}_${version}.zip" {} +
+exclusions=("./docs/*" "./.*" "./images/v1/*" "./images/v2/*" "./images/v3/*")
+
+exclude_args=()
+for pattern in "${exclusions[@]}"; do
+    exclude_args+=( -o -path "$pattern" )
+done
+exclude_args=( "${exclude_args[@]:1}" )
+
+find . -type f ! \( "${exclude_args[@]}" \) -exec zip -r "bin/${name}_${version}.zip" {} +

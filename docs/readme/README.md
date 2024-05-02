@@ -48,6 +48,11 @@ It is open source so feel free to check the source code.
 
 ## Changelog
 
+### 3.13.0
+- [Improvement] Shipped file size reduction almost 50%.(docs & hidden folder no longer shipped with Store. instead it will be visible on Landing page of CPI helper)
+- [Improvement] UI Icon & related Bugfixes
+- [Feature] Error popup will be visible if Buetify fails.
+
 ### 3.12.1
 
 - [Improvement] Better payload viewer & Update payload directly in trace Body panel. Special thanks to [Omkar Patel](https://github.com/incpi).
