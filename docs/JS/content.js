@@ -72,7 +72,10 @@ const readme_configs = [
     { "divider": "##", "id": "readmeDiv", "path": "readme/README.md" },
     { "divider": "##", "id": "PluginDiv", "path": "readme/PluginREADME.md" },
     { "divider": "##", "id": "cocDiv", "path": "readme/code_of_conduct.md" },
-    { "divider": "##", "id": "contributionDiv", "path": "readme/contributing.md" }]
+    { "divider": "##", "id": "contributionDiv", "path": "readme/contributing.md" }, 
+    { "divider": "##", "id": "bug_report", "path": "ISSUE_TEMPLATE/bug_report.md" },
+    { "divider": "##", "id": "feature_request", "path": "ISSUE_TEMPLATE/feature_request.md" },
+    { "divider": "##", "id": "other", "path": "ISSUE_TEMPLATE/other.md" }]
 const prev_feature = [
     { "caption": "Sidebar with Processed Messages", "description": "Conveniently view processed messages alongside your integration flow design.", "image": "chrome1.png" },
     { "caption": "Activate InlineTrace", "description": "Enable InlineTrace to visualize the message route directly within the integration flow designer.", "image": "chrome_inlinetrace_small.png" },

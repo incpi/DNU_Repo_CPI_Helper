@@ -2,6 +2,8 @@
 
 echo "Copy readme to docs..."
 cp README.md docs/readme/README.md
+echo "Copy Template to website Site..."
+cp .github/ISSUE_TEMPLATE/* docs/ISSUE_TEMPLATE/
 # copy paste readme root->docs
 
 echo "Remove old zip file..."

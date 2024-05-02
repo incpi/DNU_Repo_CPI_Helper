@@ -7,7 +7,7 @@ async function fetchReadmeFile(lst, baseUrl) {
                 $.ajax({
                     url: baseUrl + item.path, // URL to fetch markdown content
                     success: function (readmeText) {
-                        const md = window.markdownit();
+                        const md = window.markdownit({ html: true, breaks: true, linkify: true, typographer: true });
                         const arrayread = readmeText.split(new RegExp('^' + item.divider + " ", 'gm'));
                         let htmlContent = "";
                         for (const key in arrayread) {

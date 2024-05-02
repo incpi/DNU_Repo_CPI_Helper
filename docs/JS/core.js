@@ -31,3 +31,33 @@ function animateValue(obj, start, end, duration) {
         window.requestAnimationFrame(step);
     });
 }
+
+
+async function copyContent(url) {
+    try {
+        const response = await fetch(baseUrl + url);
+        if (!response.ok) {
+            throw new Error('Failed to load file: ' + response.status);
+        }
+        const text = await response.text();
+        await navigator.clipboard.writeText(text).then(
+            showToast('Content copied to clipboard successfully.', true));
+    } catch (error) {
+        console.error(error);
+        showToast('Error: Failed to fetch or copy content.', false); // Show error message
+    }
+}
+
+function showToast(message, isSuccess) {
+    const toastBody = document.getElementById('toastBody');
+    const myToast = new bootstrap.Toast(document.getElementById('myToast'));
+    toastBody.textContent = message;
+    if (isSuccess) {
+        toastBody.classList.remove('text-danger');
+        toastBody.classList.add('text-success');
+    } else {
+        toastBody.classList.remove('text-success');
+        toastBody.classList.add('text-danger');
+    }
+    myToast.show();
+}
