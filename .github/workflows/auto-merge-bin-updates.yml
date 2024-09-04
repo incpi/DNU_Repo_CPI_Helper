@@ -13,8 +13,13 @@ jobs:
       - name: Check out the repository
         uses: actions/checkout@v3
 
-      - name: Install GitHub CLI
-        run: sudo apt-get install gh
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v3
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        run: npm install
 
       - name: Check for changes in bin folder
         id: check-bin-changes
@@ -49,6 +54,10 @@ jobs:
         with:
           script: |
             const prNumber = ${{ steps.create-pr.outputs.pull_request_number }};
+            if (!prNumber) {
+              throw new Error("Pull request number not found.");
+            }
+
             const { data: pr } = await github.pulls.get({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -57,8 +66,6 @@ jobs:
 
             // Ensure the PR is up-to-date with the base branch
             if (pr.base.sha !== pr.head.sha) {
-              console.log("PR is up-to-date with base branch.");
-            } else {
               throw new Error("PR is not up-to-date with the base branch.");
             }
 

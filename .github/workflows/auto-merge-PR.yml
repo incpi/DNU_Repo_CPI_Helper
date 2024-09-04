@@ -8,6 +8,9 @@ jobs:
   auto-merge:
     runs-on: ubuntu-latest
     steps:
+      - name: Check out the repository
+        uses: actions/checkout@v3
+
       - name: Check number of files changed
         id: check-files-changed
         uses: actions/github-script@v6
@@ -18,7 +21,6 @@ jobs:
               repo: context.repo.repo,
               pull_number: context.payload.pull_request.number
             });
-
             return files.length;
 
       - name: Check if PR has more than 3 approvals
@@ -31,13 +33,11 @@ jobs:
               repo: context.repo.repo,
               pull_number: context.payload.pull_request.number
             });
-
             const approvals = reviews.filter(review => review.state === 'APPROVED').length;
             const ownerApproval = reviews.some(review => 
               review.state === 'APPROVED' && 
               review.user.login === context.repo.owner
             );
-
             return {
               approvals,
               ownerApproval
@@ -51,5 +51,5 @@ jobs:
           steps.check-approvals.outputs.result.ownerApproval)
         uses: actions-ecosystem/action-merge@v1
         with:
-          github_token: ${{ secrets.CPI_S }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           pull_number: ${{ github.event.pull_request.number }}
