@@ -1,55 +1,87 @@
-name: Auto Merge PRs
+name: Auto Merge Bin Folder Updates
 
 on:
-  pull_request_review:
-    types: [submitted]
+  push:
+    branches:
+      - "**" # Trigger on push to any branch
 
 jobs:
-  auto-merge:
+  auto-merge-bin-updates:
     runs-on: ubuntu-latest
+    if: github.actor == github.repository_owner
     steps:
-      - name: Check number of files changed
-        id: check-files-changed
+      - name: Check out the repository
+        uses: actions/checkout@v3
+
+      - name: Install GitHub CLI
+        run: sudo apt-get install gh
+
+      - name: Check for changes in bin folder
+        id: check-bin-changes
+        run: |
+          if git diff --name-only ${{ github.sha }} | grep '^bin/'; then
+            echo "changes_in_bin=true" >> $GITHUB_ENV
+          else
+            echo "changes_in_bin=false" >> $GITHUB_ENV
+          fi
+
+      - name: Create a pull request if bin folder is updated
+        if: env.changes_in_bin == 'true'
+        id: create-pr
+        uses: peter-evans/create-pull-request@v5
+        with:
+          commit-message: "Auto PR: Update bin folder"
+          branch: bin-folder-update-${{ github.sha }}
+          title: "Auto PR: Update bin folder"
+          body: "This PR was automatically created due to changes in the bin folder."
+          base: main
+          delete-branch: true
+          labels: auto-pr
+
+      - name: Wait for the pull request to be ready for merge
+        if: env.changes_in_bin == 'true'
+        run: sleep 10 # Wait for PR to be created and GitHub to process it
+
+      - name: Ensure PR has passing status checks and is up-to-date
+        if: env.changes_in_bin == 'true'
         uses: actions/github-script@v6
+        id: compliance-check
         with:
           script: |
-            const { data: files } = await github.pulls.listFiles({
+            const prNumber = ${{ steps.create-pr.outputs.pull_request_number }};
+            const { data: pr } = await github.pulls.get({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              pull_number: context.payload.pull_request.number
+              pull_number: prNumber
             });
 
-            return files.length;
+            // Ensure the PR is up-to-date with the base branch
+            if (pr.base.sha !== pr.head.sha) {
+              console.log("PR is up-to-date with base branch.");
+            } else {
+              throw new Error("PR is not up-to-date with the base branch.");
+            }
 
-      - name: Check if PR has more than 3 approvals
-        id: check-approvals
-        uses: actions/github-script@v6
-        with:
-          script: |
-            const { data: reviews } = await github.pulls.listReviews({
+            // Ensure all required status checks are passing
+            const { data: checks } = await github.checks.listForRef({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              pull_number: context.payload.pull_request.number
+              ref: pr.head.sha
             });
 
-            const approvals = reviews.filter(review => review.state === 'APPROVED').length;
-            const ownerApproval = reviews.some(review => 
-              review.state === 'APPROVED' && 
-              review.user.login === context.repo.owner
-            );
+            const failingChecks = checks.check_runs.filter(check => check.conclusion !== 'success');
+            if (failingChecks.length > 0) {
+              throw new Error(`Some status checks are not passing: ${failingChecks.map(check => check.name).join(", ")}`);
+            }
 
-            return {
-              approvals,
-              ownerApproval
-            };
+            return prNumber;
 
-      - name: Merge the PR if it meets conditions
-        if: |
-          (steps.check-approvals.outputs.result.approvals > 3 && 
-          steps.check-files-changed.outputs.result <= 10) ||
-          (steps.check-files-changed.outputs.result > 10 &&
-          steps.check-approvals.outputs.result.ownerApproval)
-        uses: actions-ecosystem/action-merge@v1
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          pull_number: ${{ github.event.pull_request.number }}
+      - name: Merge the pull request using GitHub CLI
+        if: env.changes_in_bin == 'true' && steps.compliance-check.conclusion == 'success'
+        run: |
+          gh pr merge ${{ steps.create-pr.outputs.pull_request_number }} --squash --delete-branch --repo ${{ github.repository }}
+
+      - name: Delete the bin-folder-update branch (cleanup)
+        if: env.changes_in_bin == 'true'
+        run: |
+          git push origin --delete bin-folder-update-${{ github.sha }}
