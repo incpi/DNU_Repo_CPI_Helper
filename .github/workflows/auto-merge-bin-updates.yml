@@ -24,11 +24,11 @@ jobs:
       - name: Check for changes in bin folder
         id: check-bin-changes
         run: |
-          if git diff --name-only ${{ github.sha }} | grep '^bin/'; then
+          # Check for changes in the bin folder, including deletions
+          if git diff --name-status HEAD~1 | grep '^D.*^bin/'; then
             echo "changes_in_bin=true" >> $GITHUB_ENV
           else
             echo "changes_in_bin=false" >> $GITHUB_ENV
-            exit 0
           fi
 
       - name: Create a pull request if bin folder is updated
@@ -84,10 +84,10 @@ jobs:
 
             return prNumber;
 
-      - name: Merge the pull request directly into main
+      - name: Merge the pull request using GitHub CLI
         if: env.changes_in_bin == 'true' && steps.compliance-check.outputs.result == 'success'
         run: |
-          gh pr merge ${{ steps.create-pr.outputs.pull_request_number }} --squash --delete-branch --repo ${{ github.repository }} --base main
+          gh pr merge ${{ steps.create-pr.outputs.pull_request_number }} --squash --delete-branch --repo ${{ github.repository }}
 
       - name: Delete the bin-folder-update branch (cleanup)
         if: env.changes_in_bin == 'true'
