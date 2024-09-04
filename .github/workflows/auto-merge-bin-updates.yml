@@ -1,0 +1,86 @@
+name: Auto Merge Bin Folder Updates
+
+on:
+  push:
+    branches:
+      - "**" # Trigger on push to any branch
+
+jobs:
+  auto-merge-bin-updates:
+    runs-on: ubuntu-latest
+    if: github.actor == github.repository_owner
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v3
+
+      - name: Check for changes in bin folder
+        id: check-bin-changes
+        run: |
+          if git diff --name-only ${{ github.sha }} | grep '^bin/'; then
+            echo "changes_in_bin=true" >> $GITHUB_ENV
+          else
+            echo "changes_in_bin=false" >> $GITHUB_ENV
+          fi
+
+      - name: Create a pull request if bin folder is updated
+        if: env.changes_in_bin == 'true'
+        id: create-pr
+        uses: peter-evans/create-pull-request@v5
+        with:
+          commit-message: "Auto PR: Update bin folder"
+          branch: bin-folder-update-${{ github.sha }}
+          title: "Auto PR: Update bin folder"
+          body: "This PR was automatically created due to changes in the bin folder."
+          base: main
+          delete-branch: true
+          labels: auto-pr
+
+      - name: Wait for the pull request to be ready for merge
+        if: env.changes_in_bin == 'true'
+        run: sleep 10 # Wait for PR to be created and GitHub to process it
+
+      - name: Ensure PR has passing status checks and is up-to-date
+        if: env.changes_in_bin == 'true'
+        uses: actions/github-script@v6
+        id: compliance-check
+        with:
+          script: |
+            const prNumber = ${{ steps.create-pr.outputs.pull_request_number }};
+            const { data: pr } = await github.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: prNumber
+            });
+
+            // Ensure the PR is up-to-date with the base branch
+            if (pr.base.sha !== pr.head.sha) {
+              console.log("PR is up-to-date with base branch.");
+            } else {
+              throw new Error("PR is not up-to-date with the base branch.");
+            }
+
+            // Ensure all required status checks are passing
+            const { data: checks } = await github.checks.listForRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: pr.head.sha
+            });
+
+            const failingChecks = checks.check_runs.filter(check => check.conclusion !== 'success');
+            if (failingChecks.length > 0) {
+              throw new Error(`Some status checks are not passing: ${failingChecks.map(check => check.name).join(", ")}`);
+            }
+
+            return prNumber;
+
+      - name: Merge the pull request
+        if: env.changes_in_bin == 'true' && steps.compliance-check.conclusion == 'success'
+        uses: actions-ecosystem/action-merge@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          pull_number: ${{ steps.create-pr.outputs.pull_request_number }}
+
+      - name: Delete the bin-folder-update branch (cleanup)
+        if: env.changes_in_bin == 'true'
+        run: |
+          git push origin --delete bin-folder-update-${{ github.sha }}
