@@ -13,6 +13,9 @@ jobs:
       - name: Check out the repository
         uses: actions/checkout@v3
 
+      - name: Install GitHub CLI
+        run: sudo apt-get install gh
+
       - name: Check for changes in bin folder
         id: check-bin-changes
         run: |
@@ -73,14 +76,10 @@ jobs:
 
             return prNumber;
 
-      - name: Merge the pull request
+      - name: Merge the pull request using GitHub CLI
         if: env.changes_in_bin == 'true' && steps.compliance-check.conclusion == 'success'
-        uses: peter-evans/merge-pull-request-action@v5
-        with:
-          pull-request: ${{ steps.create-pr.outputs.pull_request_number }}
-          merge-method: squash
-          commit-message: "Auto-merged PR: ${{ steps.create-pr.outputs.pull_request_number }}"
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr merge ${{ steps.create-pr.outputs.pull_request_number }} --squash --delete-branch --repo ${{ github.repository }}
 
       - name: Delete the bin-folder-update branch (cleanup)
         if: env.changes_in_bin == 'true'
