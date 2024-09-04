@@ -28,6 +28,7 @@ jobs:
             echo "changes_in_bin=true" >> $GITHUB_ENV
           else
             echo "changes_in_bin=false" >> $GITHUB_ENV
+            exit 0
           fi
 
       - name: Create a pull request if bin folder is updated
@@ -83,10 +84,10 @@ jobs:
 
             return prNumber;
 
-      - name: Merge the pull request using GitHub CLI
+      - name: Merge the pull request directly into main
         if: env.changes_in_bin == 'true' && steps.compliance-check.outputs.result == 'success'
         run: |
-          gh pr merge ${{ steps.create-pr.outputs.pull_request_number }} --squash --delete-branch --repo ${{ github.repository }}
+          gh pr merge ${{ steps.create-pr.outputs.pull_request_number }} --squash --delete-branch --repo ${{ github.repository }} --base main
 
       - name: Delete the bin-folder-update branch (cleanup)
         if: env.changes_in_bin == 'true'
