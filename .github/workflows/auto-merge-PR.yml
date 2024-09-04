@@ -51,5 +51,5 @@ jobs:
           steps.check-approvals.outputs.result.ownerApproval)
         uses: actions-ecosystem/action-merge@v1
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.CPI_S }}
           pull_number: ${{ github.event.pull_request.number }}
