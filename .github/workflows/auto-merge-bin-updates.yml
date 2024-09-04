@@ -75,10 +75,12 @@ jobs:
 
       - name: Merge the pull request
         if: env.changes_in_bin == 'true' && steps.compliance-check.conclusion == 'success'
-        uses: actions-ecosystem/action-merge@v1
+        uses: peter-evans/merge-pull-request-action@v5
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          pull_number: ${{ steps.create-pr.outputs.pull_request_number }}
+          pull-request: ${{ steps.create-pr.outputs.pull_request_number }}
+          merge-method: squash
+          commit-message: "Auto-merged PR: ${{ steps.create-pr.outputs.pull_request_number }}"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Delete the bin-folder-update branch (cleanup)
         if: env.changes_in_bin == 'true'
