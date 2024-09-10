@@ -4,7 +4,7 @@ async function Themesync() {
   $("#cpihelperglobal").removeClass("ch_dark ch_light").addClass(!isDarkTheme ? "ch_dark" : "ch_light");
   await chrome.storage.sync.set({ "CPIhelperThemeInfo": isDarkTheme });
 }
-*/
+
 function createGlobalId(id = "cpihelperglobal") {
   let global = $(`#${id}`);
   const toggleDarkMode = () => {
