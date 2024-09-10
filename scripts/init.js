@@ -4,7 +4,7 @@ async function Themesync() {
   $("#cpihelperglobal").removeClass("ch_dark ch_light").addClass(!isDarkTheme ? "ch_dark" : "ch_light");
   await chrome.storage.sync.set({ "CPIhelperThemeInfo": isDarkTheme });
 }
-
+*/
 function createGlobalId(id = "cpihelperglobal") {
   let global = $(`#${id}`);
   const toggleDarkMode = () => {
@@ -30,8 +30,8 @@ function createGlobalId(id = "cpihelperglobal") {
     } else {
       $("#cpihelperglobal").append(`<div id="${id}"></div>`);
     }
-    toggleDarkMode();
-    const observer = new MutationObserver(async function (mutationsList) {
+ //   toggleDarkMode();
+  /*  const observer = new MutationObserver(async function (mutationsList) {
       for (const mutation of mutationsList) {
         if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
           toggleDarkMode();
@@ -40,17 +40,11 @@ function createGlobalId(id = "cpihelperglobal") {
       }
     });
     observer.observe(document.documentElement, { attributes: true });
+    */
   }
   return $(`#${id}`);
 }
-const body = (id = "cpihelperglobal") => {
-  let element = document.querySelector(`#${id}`);
-  if (!element) {
-    createGlobalId();
-    element = document.querySelector(`#${id}`);
-  }
-  return element;
-};
+
 
 function runGlobalIdForOneMinute() {
   const interval = 800;
@@ -68,3 +62,14 @@ function runGlobalIdForOneMinute() {
 
 // Start the function
 runGlobalIdForOneMinute();
+
+
+
+const body = (id = "cpihelperglobal") => {
+  let element = document.querySelector(`#${id}`);
+  if (!element) {
+    createGlobalId();
+    element = document.querySelector(`#${id}`);
+  }
+  return element;
+};
