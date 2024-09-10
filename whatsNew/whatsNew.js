@@ -25,20 +25,19 @@ async function whatsNewCheck(showOnlyOnce = true) {
                   Meet us at SAP Devtoberfest on 25th of September at 11am CEST
                 </div>
             </h3>
-    
     <h4>Another popup? Ok, let's keep it short:</h4>
     
     
     <div style="margin-top: 0.1rem">📅 Meet us at SAP Devtoberfest on 25th of September at 11am CEST (click event for your local timezone)
     </div>
     <div style="text-align: center; margin: 20px;">
-    <a href="https://community.sap.com/t5/devtoberfest/speed-up-your-sap-cloud-integration-development-with-cpi-helper/ev-p/13802891" target="_blank" style="color: darkblue; text-decoration: none;"
+    <a href="https://community.sap.com/t5/devtoberfest/speed-up-your-sap-cloud-integration-development-with-cpi-helper/ev-p/13802891" target="_blank" style="color: green; text-decoration: none;"
     onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">Community Link</a> --- 
-    <a href="https://www.youtube.com/watch?v=uSwSQbc_ULU" target="_blank" style="color: darkblue; text-decoration: none;" 
+    <a href="https://www.youtube.com/watch?v=uSwSQbc_ULU" target="_blank" style="color: green; text-decoration: none;" 
     onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">Youtube</a> --- 
-    <a href="https://www.linkedin.com/events/speedupyoursapcloudintegrationd7237127761532764163/" target="_blank" style="color: darkblue; text-decoration: none;" 
+    <a href="https://www.linkedin.com/events/speedupyoursapcloudintegrationd7237127761532764163/" target="_blank" style="color: green; text-decoration: none;" 
     onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">LinkedIn Event</a> --- 
-    <a href="${devtoberfestInvite}" target="_blank" style="color: darkblue; text-decoration: none;" 
+    <a href="${devtoberfestInvite}" target="_blank" style="color: green; text-decoration: none;" 
     onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">Add to Calendar</a>
     </div>
     
@@ -98,7 +97,7 @@ If you are planning or working on a migration to Integration Suite, then Figaf h
                     What's New?
                 </div>
             </h3>
-            <a class="ui red center right ribbon label" style="position: absolute;">FireFox limited support</a>  
+            <a class="ui red top right ribbon label" style="position: absolute;">FireFox limited support</a>  
             <div class="changeloglist">${
                 Object.entries(
                     whats_new_log.trim().split('\n').reduce((acc, line) => {
