@@ -571,7 +571,10 @@ function getStatusColor(status) {
     default: return "grey";
   }
 }
-function getStatusColorCode(status, isDarkMode = !$("html").hasClass("sapUiTheme-sap_horizon_dark")) {
+function getStatusColorCode(status, isDarkMode) {
+  if (isDarkMode === undefined || isDarkMode === null) {
+    isDarkMode = !$("html").hasClass("sapUiTheme-sap_horizon_dark");
+  }
   const colors = {
     PROCESSING: isDarkMode ? "#e76500" : "#f7bf00",
     STARTING: isDarkMode ? "#e76500" : "#f7bf00",
@@ -587,6 +590,7 @@ function getStatusColorCode(status, isDarkMode = !$("html").hasClass("sapUiTheme
   };
   return colors[status] || colors.default;
 }
+
 function getStatusIcon(status) {
   let Icon;
   switch (status) {

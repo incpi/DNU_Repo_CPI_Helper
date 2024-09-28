@@ -3021,13 +3021,13 @@
 
 .ch_dark .ui.positive.buttons .button:hover,
 .ch_dark .ui.positive.button:hover {
-    background-color: #16ab39;
+    background-color: var(--Successbgcolor);
     color: #fff;
 }
 
 .ch_dark .ui.positive.buttons .button:focus,
 .ch_dark .ui.positive.button:focus {
-    background-color: #0ea432;
+    background-color: var(--Successbgcolor);
     color: #fff;
 }
 
@@ -9706,8 +9706,8 @@
 }
 
 .ch_dark .ui.positive.message {
-    background-color: #fcfff5;
-    color: #2c662d;
+    background-color: var(--Successbgcolor);
+    color: #fff;
 }
 
 .ch_dark .ui.positive.message,
@@ -10499,8 +10499,8 @@
 .ch_dark .ui.ui.ui.ui.table tr.positive,
 .ch_dark .ui.ui.table td.positive {
     box-shadow: 0 0 0 #a3c293 inset;
-    background: #fcfff5;
-    color: #2c662d;
+    color: #fcfff5;
+    background: var(--Successbgcolor);
 }
 
 .ch_dark .ui.ui.ui.ui.inverted.table tr.positive,
@@ -10855,8 +10855,8 @@
 .ch_dark .ui.ui.selectable.table tr.positive:hover,
 .ch_dark .ui.table tr td.selectable.positive:hover,
 .ch_dark .ui.selectable.table tr:hover td.positive {
-    background: #f7ffe6;
-    color: #275b28;
+    background: var(--Successbgcolor);
+    color: #fff;
 }
 
 .ch_dark .ui.ui.selectable.table tr.negative:hover,
