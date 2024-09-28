@@ -61,10 +61,11 @@ function openInfo(url) {
 //refresh the logs in message window
 var getLogsTimer;
 var activeInlineItem;
-var numberEntries = hostData.count || 10;
+
 
 //fill the message sidebar
 async function renderMessageSidebar() {
+  var numberEntries = hostData.count || 10;
   var createRow = function (elements, trClass) {
     var tr = document.createElement("tr");
     tr.className = trClass;
@@ -801,7 +802,7 @@ async function buildButtonBar() {
     );
     headerBar.style.paddingBottom = "0px";
   } catch (e) {
-    log.debug("error when trying to set padding-bottom of headerbar");
+    log.error("error when trying to set padding-bottom of headerbar");
   }
 
   // get status of powertrace button
@@ -1943,13 +1944,14 @@ setInterval(async function () {
   await checkURLchange(window.location.href);
 
   //check if sidebar should be deactivated because we are not on a suitable page
-
-  if(cpiData.currentArtifactType != "IFlow" && sidebar.active) {
+  // not allowed type of artifact and buildbutton is not visible then deactivate.
+  AllowedTypes=["IFlow","ODATA API","REST API", "SOAP API"].includes(cpiData.currentArtifactType)
+  if(!AllowedTypes && sidebar.active && !document.getElementById("__buttonxx")) {
     sidebar.deactivate();
   }
 
-  //add button bar and breadcrumbs if page rendered 
-  if (cpiData.currentArtifactType == "IFlow" && document.querySelector('[id^="svgBackgroundPointerPanelLayer-"]') && document.getElementsByClassName("spcHeaderActionButton")) {
+  //add button bar and breadcrumbs if page rendered  
+  if(AllowedTypes ){
     buildButtonBar();
     addBreadcrumbs();
   }
@@ -1963,7 +1965,6 @@ setInterval(async function () {
   } catch (error) {
     log.error(error);
   }
-
 
   //new update message sidebar
   if (!refreshActive) {
@@ -1992,7 +1993,6 @@ setInterval(async function () {
     lastDurationRefresh = end - start;
     log.debug("refresh message sidebar took " + lastDurationRefresh + "ms");
     nextMessageSidebarRefreshCount = calculateMessageSidebarTimerTime(lastTabHidden, lastDurationRefresh);
-
   }
 
   //check if trace should be refreshed again
