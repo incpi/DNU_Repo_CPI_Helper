@@ -1,5 +1,4 @@
 # CPI-Helper Chrome-Extension
-
 > [!IMPORTANT]
 > CPI-Helper Chrome-Extension
 > Don't utilize any branches. This repository is intended just for experimental use.
