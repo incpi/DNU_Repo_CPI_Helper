@@ -1,0 +1,55 @@
+name: Auto Merge PRs
+
+on:
+  pull_request_review:
+    types: [submitted]
+
+jobs:
+  auto-merge:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v3
+
+      - name: Check number of files changed
+        id: check-files-changed
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const { data: files } = await github.pulls.listFiles({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.payload.pull_request.number
+            });
+            return files.length;
+
+      - name: Check if PR has more than 3 approvals
+        id: check-approvals
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const { data: reviews } = await github.pulls.listReviews({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.payload.pull_request.number
+            });
+            const approvals = reviews.filter(review => review.state === 'APPROVED').length;
+            const ownerApproval = reviews.some(review => 
+              review.state === 'APPROVED' && 
+              review.user.login === context.repo.owner
+            );
+            return {
+              approvals,
+              ownerApproval
+            };
+
+      - name: Merge the PR if it meets conditions
+        if: |
+          (steps.check-approvals.outputs.result.approvals > 3 && 
+          steps.check-files-changed.outputs.result <= 10) ||
+          (steps.check-files-changed.outputs.result > 10 &&
+          steps.check-approvals.outputs.result.ownerApproval)
+        uses: actions-ecosystem/action-merge@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          pull_number: ${{ github.event.pull_request.number }}
